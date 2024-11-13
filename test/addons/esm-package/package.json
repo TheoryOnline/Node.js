@@ -1,0 +1,11 @@
+{
+  "name": "esm-package",
+  "exports": {
+    "./Debug": {
+      "node-addons": "./build/Debug/binding.node"
+    },
+    "./Release": {
+      "node-addons": "./build/Release/binding.node"
+    }
+  }
+}
