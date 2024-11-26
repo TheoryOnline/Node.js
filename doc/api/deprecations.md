@@ -3777,20 +3777,6 @@ It is recommended to use the `new` qualifier instead. This applies to all REPL c
 <!-- YAML
 changes:
   - version: REPLACEME
-    pr-url: https://github.com/nodejs/node/pull/55892
-    description: Documentation-only.
--->
-
-Type: Documentation-only
-
-Passing non-supported argument types is deprecated and, instead of returning `false`,
-will throw an error in a future version.
-
-### DEP0187: Passing invalid argument types to `fs.existsSync`
-
-<!-- YAML
-changes:
-  - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/55753
     description: Runtime deprecation.
 -->
