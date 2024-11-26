@@ -3786,7 +3786,7 @@ Type: Documentation-only
 Passing non-supported argument types is deprecated and, instead of returning `false`,
 will throw an error in a future version.
 
-### DEP0187: `fs.existsSync` never throw on invalid arguments
+### DEP0187: Passing invalid argument types to `fs.existsSync`
 
 <!-- YAML
 changes:
@@ -3797,7 +3797,8 @@ changes:
 
 Type: Runtime
 
-Passing invalid argument types is deprecated.
+Passing non-supported argument types is deprecated and, instead of returning `false`,
+will throw an error in a future version.
 
 [NIST SP 800-38D]: https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf
 [RFC 6066]: https://tools.ietf.org/html/rfc6066#section-3
