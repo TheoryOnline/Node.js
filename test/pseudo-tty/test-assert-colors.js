@@ -2,10 +2,14 @@
 require('../common');
 const assert = require('assert').strict;
 
-assert.throws(() => {
+function setup() {
   process.env.FORCE_COLOR = '1';
   delete process.env.NODE_DISABLE_COLORS;
   delete process.env.NO_COLOR;
+}
+
+assert.throws(() => {
+  setup();
   assert.deepStrictEqual([1, 2, 2, 2, 2], [2, 2, 2, 2, 2]);
 }, (err) => {
   const expected = 'Expected values to be strictly deep-equal:\n' +
@@ -19,6 +23,64 @@ assert.throws(() => {
     '\x1B[39m    2,\n' +
     '\x1B[31m-\x1B[39m   2\n' +
     '\x1B[39m  ]\n';
+
   assert.strictEqual(err.message, expected);
   return true;
 });
+
+{
+  // TODO(puskin94): remove the emitWarning override once the partialDeepStrictEqual method is not experimental anymore
+  // Suppress warnings, necessary otherwise the tools/pseudo-tty.py runner will fail
+  const originalEmitWarning = process.emitWarning;
+  process.emitWarning = () => {};
+
+  assert.throws(() => {
+    setup();
+    assert.partialDeepStrictEqual([1, 2, 3, 5], [4, 5]);
+  }, (err) => {
+    const expected = 'Expected values to be partially and strictly deep-equal:\n' +
+      '\x1B[90mactual\x1B[39m \x1B[31m- expected\x1B[39m\n' +
+      '\n' +
+      '\x1B[39m  [\n' +
+      '\x1B[90m    1,\x1B[39m\n' +
+      '\x1B[90m    2,\x1B[39m\n' +
+      '\x1B[90m    3,\x1B[39m\n' +
+      '\x1B[31m-\x1B[39m   4,\n' +
+      '\x1B[39m    5\n' +
+      '\x1B[39m  ]\n';
+
+    assert.strictEqual(err.message, expected);
+    return true;
+  });
+
+  process.emitWarning = originalEmitWarning; // Restore original process.emitWarning
+}
+
+{
+  // TODO(puskin94): remove the emitWarning override once the partialDeepStrictEqual method is not experimental anymore
+  // Suppress warnings, necessary otherwise the tools/pseudo-tty.py runner will fail
+  const originalEmitWarning = process.emitWarning;
+  process.emitWarning = () => {};
+
+  assert.throws(() => {
+    setup();
+    assert.partialDeepStrictEqual({ a: 1, b: 2, c: 3, d: 5 }, { z: 4, b: 5 });
+  }, (err) => {
+    const expected = 'Expected values to be partially and strictly deep-equal:\n' +
+      '\x1B[90mactual\x1B[39m \x1B[31m- expected\x1B[39m\n' +
+      '\n' +
+      '\x1B[39m  {\n' +
+      '\x1B[90m    a: 1,\x1B[39m\n' +
+      '\x1B[90m    b: 2,\x1B[39m\n' +
+      '\x1B[90m    c: 3,\x1B[39m\n' +
+      '\x1B[90m    d: 5\x1B[39m\n' +
+      '\x1B[31m-\x1B[39m   b: 5,\n' +
+      '\x1B[31m-\x1B[39m   z: 4\n' +
+      '\x1B[39m  }\n';
+
+    assert.strictEqual(err.message, expected);
+    return true;
+  });
+
+  process.emitWarning = originalEmitWarning; // Restore original process.emitWarning
+}
