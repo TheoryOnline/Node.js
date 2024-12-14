@@ -114,6 +114,33 @@ inline void THROW_ERR_SQLITE_ERROR(Isolate* isolate, const char* message) {
   }
 }
 
+class Backup {
+  public:
+    Backup(Environment* env, DatabaseSync* dest, DatabaseSync* source)
+        : env_(env), dest_(dest), source_(source) {
+      backup_ = sqlite3_backup_init(dest_->Connection(),
+                                    "main",
+                                    source_->Connection(),
+                                    "main");
+      if (backup_ == nullptr) {
+        THROW_ERR_SQLITE_ERROR(env->isolate(), dest_->Connection());
+      }
+    }
+
+    ~Backup() {
+      sqlite3_backup_finish(backup_);
+    }
+
+    static void Start(const FunctionCallbackInfo<Value>& args) {
+    }
+
+  private:
+    Environment* env_;
+    DatabaseSync* dest_;
+    DatabaseSync* source_;
+    sqlite3_backup* backup_;
+}
+
 class UserDefinedFunction {
  public:
   explicit UserDefinedFunction(Environment* env,
@@ -662,6 +689,10 @@ void DatabaseSync::CustomFunction(const FunctionCallbackInfo<Value>& args) {
                                      nullptr,
                                      UserDefinedFunction::xDestroy);
   CHECK_ERROR_OR_THROW(env->isolate(), db->connection_, r, SQLITE_OK, void());
+}
+
+void DatabaseSync::Backup(const FunctionCallbackInfo<Value>& args) {
+
 }
 
 void DatabaseSync::CreateSession(const FunctionCallbackInfo<Value>& args) {
@@ -1669,6 +1700,7 @@ static void Initialize(Local<Object> target,
   db_tmpl->InstanceTemplate()->SetInternalFieldCount(
       DatabaseSync::kInternalFieldCount);
 
+  SetProtoMethod(isolate, db_tmpl, "backup", DatabaseSync::Backup);
   SetProtoMethod(isolate, db_tmpl, "open", DatabaseSync::Open);
   SetProtoMethod(isolate, db_tmpl, "close", DatabaseSync::Close);
   SetProtoMethod(isolate, db_tmpl, "prepare", DatabaseSync::Prepare);
