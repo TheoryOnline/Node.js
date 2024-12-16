@@ -13,6 +13,7 @@
     'enable_pgo_generate%': '0',
     'enable_pgo_use%': '0',
     'python%': 'python',
+    'enable_lto': 'true',
 
     'node_shared%': 'false',
     'force_dynamic_crt%': 0,
@@ -187,7 +188,7 @@
             ['clang==1', {
               'lto': ' -flto ', # Clang
             }, {
-              'lto': ' -flto=4 -fuse-linker-plugin -ffat-lto-objects ', # GCC
+              'lto': ' -flto=auto -fuse-linker-plugin -fno-fat-lto-objects -flto-partition=one -ffunction-sections -fdata-sections ', # GCC
             }],
           ],
         },
