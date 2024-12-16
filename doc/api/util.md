@@ -3158,6 +3158,26 @@ util.isArray({});
 // Returns: false
 ```
 
+## `util.getStringEncodingInfo(content)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `content` {string}
+* Returns: {Object}
+
+Return the encoding and byte length of the content.
+
+```js
+const { getStringEncodingInfo } = require('node:util');
+
+getStringEncodingInfo('hello world');
+// Returns: { encoding: 'latin1', byteLength: 11 }
+getStringEncodingInfo('你好');
+// Returns: { encoding: 'utf16le', byteLength: 4 }
+```
+
 [Common System Errors]: errors.md#common-system-errors
 [Custom inspection functions on objects]: #custom-inspection-functions-on-objects
 [Custom promisified functions]: #custom-promisified-functions

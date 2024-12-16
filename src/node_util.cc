@@ -298,6 +298,21 @@ static void GetCallSites(const FunctionCallbackInfo<Value>& args) {
   args.GetReturnValue().Set(callsites);
 }
 
+static void IsStringOneByte(const FunctionCallbackInfo<Value>& args) {
+  CHECK_EQ(args.Length(), 1);
+  CHECK(args[0]->IsString());
+  bool is_one_byte = args[0].As<String>()->IsOneByte();
+  args.GetReturnValue().Set(is_one_byte);
+}
+
+static bool FastIsStringOneByte(Local<Value> receiver,
+                                const Local<Value> target) {
+  CHECK(target->IsString());
+  return target.As<String>()->IsOneByte();
+}
+
+CFunction fast_is_string_one_byte_(CFunction::Make(FastIsStringOneByte));
+
 static void IsInsideNodeModules(const FunctionCallbackInfo<Value>& args) {
   Isolate* isolate = args.GetIsolate();
   CHECK_EQ(args.Length(), 2);
@@ -356,6 +371,9 @@ void RegisterExternalReferences(ExternalReferenceRegistry* registry) {
   registry->Register(fast_guess_handle_type_.GetTypeInfo());
   registry->Register(ParseEnv);
   registry->Register(IsInsideNodeModules);
+  registry->Register(IsStringOneByte);
+  registry->Register(FastIsStringOneByte);
+  registry->Register(fast_is_string_one_byte_.GetTypeInfo());
 }
 
 void Initialize(Local<Object> target,
@@ -471,6 +489,11 @@ void Initialize(Local<Object> target,
                             "guessHandleType",
                             GuessHandleType,
                             &fast_guess_handle_type_);
+  SetFastMethodNoSideEffect(context,
+                            target,
+                            "isStringOneByte",
+                            IsStringOneByte,
+                            &fast_is_string_one_byte_);
 }
 
 }  // namespace util
